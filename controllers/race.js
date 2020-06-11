@@ -19,12 +19,20 @@ const list = (req, res) => {
     const { name } = req.query;
     const { start } = req.query;
 
-    if (name) {
-        result = result.filter(race => race.name.toLowerCase().indexOf(name.toLowerCase()) !== -1) 
+    const filterByName = race => race.name.toLowerCase().indexOf(name.toLowerCase()) !== -1;
+    const filterByStart = race => race.start.toLowerCase().indexOf(start.toLowerCase()) !== -1;
+
+    const filters = {
+        'name': filterByName,
+        'start': filterByStart
     }
 
-    if (start) {
-        result = result.filter(race => race.start.toLowerCase().indexOf(start.toLowerCase()) !== -1) 
+    for (let param of Object.keys(req.query)) {
+        if (!filters[param]) {
+            continue
+        }
+
+        result = result.filter( filters[param] )  
     }
 
     res.json(result);
